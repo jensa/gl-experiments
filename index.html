@@ -1,0 +1,88 @@
+<html>
+<body>
+  <script src="js/three.min.js"></script>
+  <script>
+  
+    
+  var camera, scene, renderer;
+  var geometry, material, mesh;
+  var mouse = new THREE.Vector2()
+  var keys = {};
+  var meshes = [];
+  init();
+  animate();
+  
+  function init() {
+    
+    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+    camera.position.z = 1;
+    
+    scene = new THREE.Scene();
+    
+    geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
+    material = new THREE.MeshNormalMaterial();
+    
+    mesh = new THREE.Mesh( geometry, material );
+    scene.add( mesh );
+    meshes.push(mesh);
+    
+    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer.setSize( window.innerWidth-50, window.innerHeight-50 );
+    document.body.appendChild( renderer.domElement );
+    bindKeys();
+  }
+  
+  function onclick(event) {
+    var raycaster = new THREE.Raycaster();
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    raycaster.setFromCamera( mouse.clone(), camera );
+    var intersects = raycaster.intersectObjects(meshes);
+    if (intersects.length > 0) {
+      console.log(intersects[0]);
+    }
+  }
+  
+  function bindKeys(){
+    renderer.domElement.addEventListener("click", onclick, true);
+    document.onkeydown = document.onkeyup =  event => {
+      keys[event.key] = event.type == 'keydown';
+    };
+  }
+  
+  function animate() {
+    
+    requestAnimationFrame( animate );
+    
+    mesh.rotation.x += 0.01;
+    mesh.rotation.y += 0.02;
+    
+    if(keys["ArrowLeft"]){
+      camera.position.x-=0.01;
+    }
+    if(keys["ArrowRight"]){
+      camera.position.x+=0.01;
+    }
+    if(keys["a"]){
+      camera.position.x-=0.01;
+    }
+    if(keys["d"]){
+      camera.position.x+=0.01;
+    }
+    if(keys["ArrowUp"]){
+      camera.position.y+=0.01;
+    }
+    if(keys["ArrowDown"]){
+      camera.position.y-=0.01;
+    }
+    if(keys["w"]) {
+      camera.position.z-=0.01;
+    }
+    if(keys["s"]) {
+      camera.position.z+=0.01;
+    }
+    renderer.render( scene, camera );
+  }
+  </script>
+</body>
+<html>
